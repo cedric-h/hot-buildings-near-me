@@ -35,8 +35,8 @@ func buildingToSvg(building b: Layer.Feature) -> String {
     <svg
         xmlns="http://www.w3.org/2000/svg"
         version="1.1"
-        viewBox="\(b.bbox.min_x - 10) \(b.bbox.min_y - 10)
-                \(b.bbox.max_x - b.bbox.min_x + 20) \(b.bbox.max_y - b.bbox.min_y + 20)"
+        viewBox="\(b.bbox.minX - 10) \(b.bbox.minY - 10)
+                \(b.bbox.maxX - b.bbox.minX + 20) \(b.bbox.maxY - b.bbox.minY + 20)"
     >
     """
 
@@ -69,26 +69,26 @@ struct Layer {
     struct Geometry {
       let lines: [[(x: Int, y: Int)]]
     }
-    let bbox: (min_x: Int, min_y: Int, max_x: Int, max_y: Int)
+    let bbox: (minX: Int, minY: Int, maxX: Int, maxY: Int)
     let geometries: [Geometry]
 
     init(geometries: [Geometry]) {
-      var min_x = Int(1e6)
-      var min_y = Int(1e6)
-      var max_x = Int(-1e6)
-      var max_y = Int(-1e6)
+      var minX = Int(1e6)
+      var minY = Int(1e6)
+      var maxX = Int(-1e6)
+      var maxY = Int(-1e6)
 
       for g in geometries {
         for line in g.lines {
           for point in line {
-            min_x = min(min_x, point.x)
-            min_y = min(min_y, point.y)
-            max_x = max(max_x, point.x)
-            max_y = max(max_y, point.y)
+            minX = min(minX, point.x)
+            minY = min(minY, point.y)
+            maxX = max(maxX, point.x)
+            maxY = max(maxY, point.y)
           }
         }
       }
-      self.bbox = (min_x, min_y, max_x, max_y)
+      self.bbox = (minX, minY, maxX, maxY)
       self.geometries = geometries
     }
   }
@@ -168,16 +168,16 @@ class Map {
     func scoreBuildingProximity(_ b: Layer.Feature) -> Double {
       var score = Double(0)
 
-      if x > b.bbox.min_x && x < b.bbox.max_x && y > b.bbox.min_y && y < b.bbox.max_y {
+      if x > b.bbox.minX && x < b.bbox.maxX && y > b.bbox.minY && y < b.bbox.maxY {
         score -= 1000
       }
 
       var closest = Double(1e6)
       for (cx, cy) in [
-        (b.bbox.min_x, b.bbox.min_y),
-        (b.bbox.min_x, b.bbox.max_y),
-        (b.bbox.max_x, b.bbox.min_y),
-        (b.bbox.max_x, b.bbox.max_y),
+        (b.bbox.minX, b.bbox.minY),
+        (b.bbox.minX, b.bbox.maxY),
+        (b.bbox.maxX, b.bbox.minY),
+        (b.bbox.maxX, b.bbox.maxY),
       ] {
         let fx = Double((cx - x) * (cx - x))
         let fy = Double((cy - y) * (cy - y))
