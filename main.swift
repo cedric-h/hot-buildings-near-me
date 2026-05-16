@@ -110,6 +110,9 @@ class Map {
     }
 
     typealias FractionalTileCoord = (tileId: UInt64, xFrac: Double, yFrac: Double)
+    /**
+     * source: https://github.com/protomaps/PMTiles/blob/0cebcaeade40034b86facb6e7da4ec726b9053fb/js/src/index.ts#L108
+     **/
     static func latLonToTileId(lat: Double, lon: Double, zoom: Double) -> FractionalTileCoord {
         func lat2tile(lat: Double, zoom: Double) -> Double {
             let x = tan(lat * Double.pi / 180) + 1/cos(lat * Double.pi/180)
@@ -196,6 +199,9 @@ class Map {
         let (tileId, xFrac, yFrac) = latLonToTileId(lat: lat, lon: lon, zoom: 15)
         let headerData = try await fetchMapBytes(from: 0, to: 16484)
 
+        /**
+         * source: https://github.com/protomaps/PMTiles/blob/0cebcaeade40034b86facb6e7da4ec726b9053fb/js/src/index.ts#L489
+         **/
         let header = headerData.withUnsafeBytes { d in
             func unalignedInt32(offset: Int) -> Int32 {
                 var tmp: Int32 = 0;
@@ -239,6 +245,10 @@ class Map {
             entries = try parseDirectory(compressedData: headerData[start...end])
         }
 
+        /**
+         * source: https://github.com/protomaps/PMTiles/blob/0cebcaeade40034b86facb6e7da4ec726b9053fb/js/src/index.ts#L258
+         * really cool binary range search
+         **/
         func findTile(_ entries: [Entry], _ tileId: UInt64) -> Entry? {
             var m = 0
             var n = entries.count - 1
@@ -267,6 +277,9 @@ class Map {
             return nil
         }
 
+        /**
+         * source: https://github.com/protomaps/PMTiles/blob/0cebcaeade40034b86facb6e7da4ec726b9053fb/js/src/index.ts#L926
+         **/
         for _ in 0...3 {
             if let entry = findTile(entries, tileId) {
                 let eFrom = entry.offset + GZIP_HEADER_SIZE
@@ -292,6 +305,9 @@ class Map {
         return []
     }
 
+    /**
+     * source: https://github.com/protomaps/PMTiles/blob/0cebcaeade40034b86facb6e7da4ec726b9053fb/js/src/index.ts#L528
+     **/
     static func parseDirectory(compressedData: Data) throws -> [Entry] {
         let data = try! (compressedData as NSData)
             .decompressed(using: .zlib) as Data
