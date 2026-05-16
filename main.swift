@@ -41,7 +41,7 @@ func buildingToSvg(building b: Layer.Feature) -> String {
     """
 
     out += "<path stroke=\"black\" stroke-width=\"5\" fill=\"#eaac3b\" d=\""
-    /* in practice it seems there is only ever one geometry in this dataset */
+    /* in practice it seems there is only ever one geometry per building in this protomaps file */
     for geometry in b.geometries {
         for line in geometry.lines {
             for (index, point) in line.enumerated() {
