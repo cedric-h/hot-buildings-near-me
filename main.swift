@@ -98,7 +98,7 @@ struct Layer {
 }
 
 class Map {
-  static let DATA_SOURCE = "https://data.source.coop/protomaps/openstreetmap/tiles/v3.pmtiles"
+  static let DATA_SOURCE = "https://data.source.coop/vida/google-microsoft-osm-open-buildings/pmtiles/goog_msft_osm.pmtiles"
   static let GZIP_HEADER_SIZE: UInt64 = 10
 
   static func fetchMapBytes(from: UInt64, to: UInt64) async throws -> Data {
@@ -351,7 +351,7 @@ class Map {
 
     while bds.i != bds.data.count {
       let layer = try bds.readLayer()
-      if layer.name == "buildings" {
+      if layer.name == "goog_msft_osm_building_footprints" {
         return layer.features
       }
     }
